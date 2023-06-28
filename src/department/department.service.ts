@@ -1,25 +1,43 @@
-import { Injectable } from '@nestjs/common';
+import { Not, Repository } from 'typeorm';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { CreateDepartmentDto, UpdateDepartmentDto } from './department.dto';
+import { Department } from './department.entity';
 
 @Injectable()
 export class DepartmentService {
-  create(createDepartmentDto: CreateDepartmentDto) {
-    return 'This action adds a new department';
+  constructor(
+    @InjectRepository(Department) private repository: Repository<Department>,
+  ) {}
+
+  async create(body: CreateDepartmentDto) {
+    const exist = await this.repository.findOneBy({ name: body.name });
+    if (exist) {
+      throw new BadRequestException('部门已存在');
+    }
+
+    const department = this.repository.create({ ...body });
+    return await this.repository.save(department);
   }
 
-  findAll() {
-    return `This action returns all department`;
+  findAll(): Promise<Department[]> {
+    return this.repository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} department`;
+  findOne(id: number): Promise<Department> {
+    return this.repository.findOneBy({ id });
   }
 
-  update(id: number, updateDepartmentDto: UpdateDepartmentDto) {
-    return `This action updates a #${id} department`;
-  }
+  async update(id: number, body: UpdateDepartmentDto): Promise<Department> {
+    const exist = await this.repository.findOneBy({
+      id: Not(id),
+      name: body.name,
+    });
+    if (exist) {
+      throw new BadRequestException('部门已存在');
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} department`;
+    const department = this.repository.create({ id, ...body });
+    return await this.repository.save(department);
   }
 }
