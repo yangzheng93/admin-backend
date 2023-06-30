@@ -2,8 +2,9 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   Post,
-  Request,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from './auth.guard';
@@ -17,13 +18,14 @@ export class AuthController {
 
   @PublicAuth()
   @Post('login')
+  @HttpCode(200)
   login(@Body() body: AuthLoginDto) {
     return this.service.login(body.phone, body.password);
   }
 
   @UseGuards(AuthGuard)
   @Get('user-info')
-  getUserInfo(@Request() req: any) {
+  getUserInfo(@Req() req: any) {
     return req['user-info'];
   }
 }
