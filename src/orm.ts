@@ -8,6 +8,6 @@ export default new DataSource({
   password: '',
   database: 'mes',
   migrations: ['dist/migrations/*.js'],
-  entities: ['./**/*.entities.js'],
+  entities: ['dist/resources/**/*.entities.js'],
   synchronize: false,
 });

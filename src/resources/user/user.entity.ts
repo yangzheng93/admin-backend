@@ -3,9 +3,6 @@ import { CustomBaseEntity } from 'src/entities/base.entity';
 
 @Entity('user', { schema: 'mes' })
 export class User extends CustomBaseEntity {
-  @PrimaryGeneratedColumn('increment')
-  id: number = null;
-
   @Column({ type: 'varchar' })
   name: string;
 
@@ -24,9 +21,6 @@ export class User extends CustomBaseEntity {
 
   @Column({ type: 'int', nullable: true })
   department_id: number;
-
-  @Column({ type: 'simple-array' })
-  roles: string[];
 
   @Column({ type: 'enum', enum: [0, 1], default: 1 })
   is_actived: 0 | 1;

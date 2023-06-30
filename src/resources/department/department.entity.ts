@@ -3,9 +3,6 @@ import { CustomBaseEntity } from 'src/entities/base.entity';
 
 @Entity('department', { schema: 'mes' })
 export class Department extends CustomBaseEntity {
-  @PrimaryGeneratedColumn('increment')
-  id: number = null;
-
   @PrimaryColumn()
   @Column({ type: 'varchar', unique: true })
   name: string;

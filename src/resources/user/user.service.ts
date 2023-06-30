@@ -1,8 +1,14 @@
 import { Not, Repository } from 'typeorm';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto, UpdateUserDto, UserSearchInterface } from './user.dto';
+import { CreateUserDto, UpdateUserDto } from './user.dto';
 import { User } from './user.entity';
+
+interface UserSearchInterface {
+  id?: number;
+  name?: string;
+  phone?: string;
+}
 
 @Injectable()
 export class UserService {
@@ -14,17 +20,28 @@ export class UserService {
       throw new BadRequestException('该手机号已被使用');
     }
 
-    const user = this.repository.create({ ...body });
-    return await this.repository.save(user);
+    // const user = this.repository.create({ ...body });
+    return await this.repository.save(body);
   }
 
   findAll(): Promise<User[]> {
     return this.repository.find();
   }
 
-  findOne(body: UserSearchInterface): Promise<User> {
+  async findOne(body: UserSearchInterface): Promise<User> {
     const { id, name = '', phone = '' } = body;
-    return this.repository.findOneBy([{ id }, { name }, { phone }]);
+
+    const user = await this.repository.findOneBy([{ id }, { name }, { phone }]);
+
+    if (!user) {
+      throw new BadRequestException('未找到该用户');
+    } else {
+      if (user?.is_actived) {
+        return user;
+      } else {
+        throw new BadRequestException('该用户已被停用');
+      }
+    }
   }
 
   async update(id: number, body: UpdateUserDto): Promise<User> {
@@ -36,7 +53,7 @@ export class UserService {
       throw new BadRequestException('该手机号已被其他用户使用');
     }
 
-    const user = this.repository.create({ id, ...body });
-    return await this.repository.save(user);
+    // const user = this.repository.create();
+    return await this.repository.save({ id, ...body });
   }
 }
