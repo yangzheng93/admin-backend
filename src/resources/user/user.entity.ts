@@ -16,7 +16,7 @@ export class User extends CustomBaseEntity {
   @Column({ type: 'varchar', unique: true })
   phone: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', select: false })
   password: string;
 
   @Column({ type: 'int', nullable: true })

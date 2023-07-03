@@ -1,32 +1,42 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
   Patch,
   Param,
   BadRequestException,
+  HttpCode,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto, UpdateUserDto, UserSearchInterface } from './user.dto';
+import { CreateUserDto, UpdateUserDto } from './user.dto';
+
+interface UserSearchInterface {
+  id?: number;
+  name?: string;
+  phone?: string;
+}
 
 @Controller('user')
 export class UserController {
   constructor(private readonly service: UserService) {}
 
-  @Post()
+  // user/create
+  @Post('create')
   create(@Body() body: CreateUserDto) {
     return this.service.create(body);
   }
 
-  @Get()
+  // user/list
+  @Post('list')
+  @HttpCode(200)
   findAll() {
     return this.service.findAll();
   }
 
+  // user/find-one
   @Post('find-one')
   findOne(@Body() body: UserSearchInterface) {
-    if (!body.id && !body.name && !body.phone) {
+    if (!body.id && !body.phone) {
       throw new BadRequestException('参数错误');
     }
 

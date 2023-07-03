@@ -1,13 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { IsEmail, IsMobilePhone, IsNotEmpty } from 'class-validator';
 
-// 用户搜索
-export interface UserSearchInterface {
-  id?: number;
-  name?: string;
-  phone?: string;
-}
-
 export class CreateUserDto {
   @IsNotEmpty({ message: '姓名不能为空' })
   name: string;

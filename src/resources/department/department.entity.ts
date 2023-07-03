@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 import { CustomBaseEntity } from 'src/entities/base.entity';
 
 @Entity('department', { schema: 'mes' })

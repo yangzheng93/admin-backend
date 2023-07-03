@@ -6,12 +6,6 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 
-// interface ExceptionResponse {
-//   statusCode: HttpStatus;
-//   message: string;
-//   error: string | null;
-// }
-
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {

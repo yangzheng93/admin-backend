@@ -21,7 +21,16 @@ export class DepartmentService {
   }
 
   findAll(): Promise<Department[]> {
-    return this.repository.find();
+    return this.repository
+      .createQueryBuilder('department')
+      .select([
+        'department.id as id',
+        'department.name as name',
+        't_user.name as username',
+        'department.created_at as created_at',
+      ])
+      .leftJoin('user', 't_user', 'department.id = t_user.department_id')
+      .getRawMany();
   }
 
   findOne(id: number): Promise<Department> {

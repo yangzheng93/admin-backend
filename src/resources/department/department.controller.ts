@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  HttpCode,
+} from '@nestjs/common';
 import { DepartmentService } from './department.service';
 import { CreateDepartmentDto, UpdateDepartmentDto } from './department.dto';
 
@@ -11,7 +19,9 @@ export class DepartmentController {
     return this.service.create(body);
   }
 
-  @Get()
+  // department/list
+  @Post('list')
+  @HttpCode(200)
   findAll() {
     return this.service.findAll();
   }
