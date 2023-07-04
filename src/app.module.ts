@@ -22,7 +22,7 @@ import { TimeoutInterceptor } from './interceptors/timeout.interceptor';
       password: '',
       database: 'mes',
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
     }),
     AuthModule,
     UserModule,

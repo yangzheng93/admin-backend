@@ -29,6 +29,13 @@ export class UserController {
     return this.service.findAll();
   }
 
+  // user/simple-list
+  @Post('simple-list')
+  @HttpCode(200)
+  findSimpleAll() {
+    return this.service.findSimpleAll();
+  }
+
   // user/find-one
   @Get('find-one')
   findOne(@Query() query: UserSearchInterface) {

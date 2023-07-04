@@ -8,7 +8,7 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import { DepartmentService } from './department.service';
-import { CreateDepartmentDto, UpdateDepartmentDto } from './department.dto';
+import { EditDepartmentDto } from './department.dto';
 
 @Controller('department')
 export class DepartmentController {
@@ -16,8 +16,8 @@ export class DepartmentController {
 
   // department/save
   @Post('save')
-  save(@Body() body: CreateDepartmentDto) {
-    return this.service.create(body);
+  save(@Body() body: EditDepartmentDto) {
+    return this.service.save(body);
   }
 
   // department/list
@@ -30,10 +30,5 @@ export class DepartmentController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.service.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() body: UpdateDepartmentDto) {
-    return this.service.update(+id, body);
   }
 }

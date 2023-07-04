@@ -14,28 +14,21 @@ export class UserService {
   ) {}
 
   async save(body: EditUserDto): Promise<User> {
+    const params = { phone: body.phone };
     if (body.id) {
-      // 编辑
-      const exist = await this.repository.findOneBy({
-        id: Not(body.id),
-        phone: body.phone,
-      });
-      if (exist) {
-        throw new BadRequestException('该手机号已被使用');
-      }
-
-      return await this.repository.save(body);
-    } else {
-      // 新建
-      const exist = await this.repository.findOneBy({ phone: body.phone });
-      if (exist) {
-        throw new BadRequestException('该手机号已被使用');
-      }
-
-      return await this.repository.save(
-        Object.assign(body, { id: null, password: MD5('888888').toString() }),
-      );
+      Object.assign(params, { id: Not(body.id) });
     }
+
+    const exist = await this.repository.findOneBy(params);
+    if (exist) {
+      throw new BadRequestException('该手机号已被使用');
+    }
+
+    return await this.repository.save(
+      body.id
+        ? body
+        : Object.assign(body, { id: null, password: MD5('888888').toString() }),
+    );
   }
 
   async findAll(): Promise<User[]> {
@@ -82,6 +75,14 @@ export class UserService {
           ),
         ),
       };
+    });
+  }
+
+  async findSimpleAll(): Promise<User[]> {
+    return await this.repository.find({
+      select: ['id', 'name', 'phone'],
+      where: { is_actived: '1' },
+      order: { created_at: 'DESC', id: 'DESC' },
     });
   }
 

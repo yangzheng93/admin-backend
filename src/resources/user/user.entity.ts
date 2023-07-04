@@ -22,6 +22,6 @@ export class User extends CustomBaseEntity {
   @Column({ type: 'int', nullable: true })
   department_id: number;
 
-  @Column({ type: 'enum', enum: [0, 1], default: 1 })
-  is_actived: 0 | 1;
+  @Column({ type: 'varchar', default: '1' })
+  is_actived: '0' | '1';
 }
