@@ -1,10 +1,18 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { IsEmail, IsMobilePhone, IsNotEmpty } from 'class-validator';
+import {
+  IsEmail,
+  IsMobilePhone,
+  IsNotEmpty,
+  IsOptional,
+} from 'class-validator';
 
-export class CreateUserDto {
+export class EditUserDto {
+  @IsOptional()
+  id: number;
+
   @IsNotEmpty({ message: '姓名不能为空' })
   name: string;
 
+  @IsOptional()
   @IsEmail({}, { message: '无效的邮箱' })
   email: string;
 
@@ -12,10 +20,19 @@ export class CreateUserDto {
   @IsMobilePhone('zh-CN', {}, { message: '无效的手机号' })
   phone: string;
 
-  @IsNotEmpty({ message: '密码不能为空' })
+  @IsOptional()
   password: string;
 
   department_id: number;
 }
 
-export class UpdateUserDto extends PartialType(CreateUserDto) {}
+export class UpdatePwdDto {
+  @IsNotEmpty({ message: '原密码不能为空' })
+  oldPassword: string;
+
+  @IsNotEmpty({ message: '新密码不能为空' })
+  password: string;
+
+  @IsNotEmpty({ message: '确认密码不能为空' })
+  confirmed: string;
+}

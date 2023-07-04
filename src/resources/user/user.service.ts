@@ -2,13 +2,9 @@ import { Not, Repository } from 'typeorm';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RoleService } from '../role/role.service';
-import { CreateUserDto, UpdateUserDto } from './user.dto';
 import { User } from './user.entity';
-
-interface UserSearchInterface {
-  id?: number;
-  phone?: string;
-}
+import { EditUserDto, UpdatePwdDto } from './user.dto';
+import { MD5 } from 'crypto-js';
 
 @Injectable()
 export class UserService {
@@ -17,13 +13,29 @@ export class UserService {
     private roleService: RoleService,
   ) {}
 
-  async create(body: CreateUserDto) {
-    const exist = await this.repository.findOneBy({ phone: body.phone });
-    if (exist) {
-      throw new BadRequestException('该手机号已被使用');
-    }
+  async save(body: EditUserDto): Promise<User> {
+    if (body.id) {
+      // 编辑
+      const exist = await this.repository.findOneBy({
+        id: Not(body.id),
+        phone: body.phone,
+      });
+      if (exist) {
+        throw new BadRequestException('该手机号已被使用');
+      }
 
-    return await this.repository.save(body);
+      return await this.repository.save(body);
+    } else {
+      // 新建
+      const exist = await this.repository.findOneBy({ phone: body.phone });
+      if (exist) {
+        throw new BadRequestException('该手机号已被使用');
+      }
+
+      return await this.repository.save(
+        Object.assign(body, { id: null, password: MD5('888888').toString() }),
+      );
+    }
   }
 
   async findAll(): Promise<User[]> {
@@ -37,7 +49,7 @@ export class UserService {
         'user.email as email',
         'user.gender as gender',
         'user.phone as phone',
-        'user.department_id as department_id',
+        't_department.id as department_id',
         't_department.name as department_name',
         'group_concat(t_user_role.role_id) as role_ids',
         'user.created_at as created_at',
@@ -51,6 +63,10 @@ export class UserService {
         'user.department_id = t_department.id',
       )
       .groupBy('user.id')
+      .orderBy({
+        'user.created_at': 'DESC',
+        'user.id': 'DESC',
+      })
       .getRawMany();
 
     return users.map((i) => {
@@ -69,36 +85,60 @@ export class UserService {
     });
   }
 
-  async findOne(body: UserSearchInterface): Promise<User> {
-    const { id, phone } = body;
+  async findOne(query: UserSearchInterface, hasPwd = false): Promise<User> {
+    const { id, phone } = query;
 
-    const user = await this.repository
+    let sqlChain = this.repository
       .createQueryBuilder('user')
-      .addSelect('user.password')
+      .select([
+        'user.id as id',
+        'user.name as name',
+        'user.email as email',
+        'user.gender as gender',
+        'user.phone as phone',
+        't_department.id as department_id',
+        't_department.name as department_name',
+        'user.created_at as created_at',
+        'user.updated_at as updated_at',
+        'user.is_actived as is_actived',
+      ]);
+
+    if (hasPwd) {
+      sqlChain = sqlChain.addSelect('user.password as password');
+    }
+
+    const user = await sqlChain
+      .leftJoin(
+        'department',
+        't_department',
+        'user.department_id = t_department.id',
+      )
       .where('user.id = :id OR user.phone = :phone', { id, phone })
-      .getOne();
+      .getRawOne();
 
     if (!user) {
       throw new BadRequestException('未找到该用户');
+    }
+
+    if (user?.is_actived) {
+      return user;
     } else {
-      if (user?.is_actived) {
-        return user;
-      } else {
-        throw new BadRequestException('该用户已被停用');
-      }
+      throw new BadRequestException('该用户已被停用');
     }
   }
 
-  async update(id: number, body: UpdateUserDto): Promise<User> {
-    const exist = await this.repository.findOneBy({
-      id: Not(id),
-      phone: body.phone,
-    });
-    if (exist) {
-      throw new BadRequestException('该手机号已被其他用户使用');
+  async updatePassword(userId: number, body: UpdatePwdDto) {
+    const user = await this.findOne({ id: userId }, true);
+
+    if (user.password !== MD5(body.oldPassword).toString()) {
+      throw new BadRequestException('原密码校验失败');
     }
 
-    // const user = this.repository.create();
-    return await this.repository.save({ id, ...body });
+    await this.repository.save({
+      id: user.id,
+      password: MD5(body.password).toString(),
+    });
+
+    return true;
   }
 }

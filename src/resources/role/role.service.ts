@@ -14,4 +14,8 @@ export class RoleService {
       return { ...a, [b.id]: b.name };
     }, {});
   }
+
+  async findAll(): Promise<Role[]> {
+    return await this.repository.createQueryBuilder('role').getMany();
+  }
 }

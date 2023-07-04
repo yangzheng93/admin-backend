@@ -16,8 +16,7 @@ export class DepartmentService {
       throw new BadRequestException('部门已存在');
     }
 
-    const department = this.repository.create({ ...body });
-    return await this.repository.save(department);
+    return await this.repository.save(body);
   }
 
   findAll(): Promise<Department[]> {
@@ -26,10 +25,16 @@ export class DepartmentService {
       .select([
         'department.id as id',
         'department.name as name',
+        't_user.id as user_id',
         't_user.name as username',
+        't_user.phone as phone',
         'department.created_at as created_at',
       ])
-      .leftJoin('user', 't_user', 'department.id = t_user.department_id')
+      .leftJoin('user', 't_user', 'department.user_id = t_user.id')
+      .orderBy({
+        'department.created_at': 'DESC',
+        'department.id': 'DESC',
+      })
       .getRawMany();
   }
 

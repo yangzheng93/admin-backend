@@ -23,9 +23,9 @@ export class AuthController {
     return this.service.login(body.phone, body.password);
   }
 
-  @UseGuards(AuthGuard)
-  @Get('user-info')
-  getUserInfo(@Req() req: any) {
-    return req['user-info'];
-  }
+  // @UseGuards(AuthGuard)
+  // @Get('loginned-info')
+  // getLoginnedUser(@Req() req: any) {
+  //   return req['user-info'];
+  // }
 }

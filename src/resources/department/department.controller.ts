@@ -14,8 +14,9 @@ import { CreateDepartmentDto, UpdateDepartmentDto } from './department.dto';
 export class DepartmentController {
   constructor(private readonly service: DepartmentService) {}
 
-  @Post()
-  create(@Body() body: CreateDepartmentDto) {
+  // department/save
+  @Post('save')
+  save(@Body() body: CreateDepartmentDto) {
     return this.service.create(body);
   }
 
