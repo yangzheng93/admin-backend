@@ -32,7 +32,7 @@ export class UserService {
   }
 
   async findAll(): Promise<User[]> {
-    const mapOfRoles = await this.roleService.buildMapOfRoles();
+    const mapOfRoles = await this.roleService.findMapOfRoles();
 
     const users = await this.repository
       .createQueryBuilder('user')
@@ -78,6 +78,7 @@ export class UserService {
     });
   }
 
+  // 只返回 is_actived 的用户的 name + phone 字段
   async findSimpleAll(): Promise<User[]> {
     return await this.repository.find({
       select: ['id', 'name', 'phone'],

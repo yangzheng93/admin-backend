@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Query, BadRequestException } from '@nestjs/common';
 import { UserRoleService } from './user_role.service';
 
 @Controller('user-role')
@@ -18,10 +10,15 @@ export class UserRoleController {
   //   return this.userRoleService.create(createUserRoleDto);
   // }
 
-  // @Get()
-  // findAll() {
-  //   return this.userRoleService.findAll();
-  // }
+  // user-role/users-by-role
+  @Get('users-by-role')
+  findUsersByRole(@Query() query: SearchUserByRoleInterface) {
+    if (!query.id && !query.name) {
+      throw new BadRequestException('参数错误');
+    }
+
+    return this.service.findUsersByRole(query);
+  }
 
   // @Get(':id')
   // findOne(@Param('id') id: string) {
