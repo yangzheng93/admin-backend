@@ -10,11 +10,11 @@ export class InitData1687943582177 implements MigrationInterface {
     );
 
     await queryRunner.query(
-      `INSERT INTO user(name, gender, phone, password, is_actived) VALUES ('杨政', '男', '18721393486', '${p}', '1')`,
+      `INSERT INTO user(name, gender, phone, password, is_actived, is_admin) VALUES ("杨政", "男", "18721393486", "${p}", 1, 1)`,
     );
 
     await queryRunner.query(
-      `INSERT INTO user_role(user_id, role_id) VALUES ('1', '1')`,
+      `INSERT INTO user_role(user_id, role_id) VALUES (1, 1)`,
     );
   }
 
@@ -26,7 +26,7 @@ export class InitData1687943582177 implements MigrationInterface {
     await queryRunner.query(`DELETE FROM user WHERE phone='18721393486'`);
 
     await queryRunner.query(
-      `DELETE FROM user_role WHERE user_id='1' AND role_id='1'`,
+      `DELETE FROM user_role WHERE user_id=1 AND role_id=1`,
     );
   }
 }

@@ -1,37 +1,44 @@
-import { Controller, Get, Query, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  BadRequestException,
+  Post,
+  Body,
+} from '@nestjs/common';
 import { UserRoleService } from './user_role.service';
 
 @Controller('user-role')
 export class UserRoleController {
   constructor(private readonly service: UserRoleService) {}
 
-  // @Post()
-  // create(@Body() createUserRoleDto: CreateUserRoleDto) {
-  //   return this.userRoleService.create(createUserRoleDto);
-  // }
-
-  // user-role/users-by-role
-  @Get('users-by-role')
-  findUsersByRole(@Query() query: SearchUserByRoleInterface) {
-    if (!query.id && !query.name) {
+  // user-role/upsert
+  @Post('upsert')
+  upsert(@Body() body: UpsertUserRoleInterface) {
+    if (!body.role_id && !body.user_ids) {
       throw new BadRequestException('参数错误');
     }
 
-    return this.service.findUsersByRole(query);
+    return this.service.upsert(body);
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.userRoleService.findOne(+id);
-  // }
+  // user-role/users
+  @Post('users')
+  findUsersByRole(@Body() body: SearchUserByRoleInterface) {
+    if (!body.id && !body.name) {
+      throw new BadRequestException('参数错误');
+    }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateUserRoleDto: UpdateUserRoleDto) {
-  //   return this.userRoleService.update(+id, updateUserRoleDto);
-  // }
+    return this.service.findUsers(body);
+  }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.userRoleService.remove(+id);
-  // }
+  // user-role/remove
+  @Post('remove')
+  remove(@Body() body: RemoveUserRoleInterface) {
+    if (!body.ids) {
+      throw new BadRequestException('参数错误');
+    }
+
+    return this.service.remove(body);
+  }
 }

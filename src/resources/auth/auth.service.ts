@@ -2,7 +2,6 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/resources/user/user.service';
 import { MD5 } from 'crypto-js';
-import { buildProperties } from 'src/utils/funcs';
 
 @Injectable()
 export class AuthService {
@@ -19,8 +18,8 @@ export class AuthService {
     }
 
     return {
-      user: buildProperties(user, ['id', 'name', 'phone']),
-      token: await this.jwtService.signAsync({ sub: user.id }),
+      user_id: user.id,
+      token: await this.jwtService.signAsync({ sub: user.id, user: user }),
     };
   }
 }

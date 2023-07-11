@@ -8,6 +8,9 @@ import { UserModule } from './resources/user/user.module';
 import { DepartmentModule } from './resources/department/department.module';
 import { RoleModule } from './resources/role/role.module';
 import { UserRoleModule } from './resources/user_role/user_role.module';
+import { PermissionModule } from './resources/permission/permission.module';
+import { PermissionGroupModule } from './resources/permission_group/permission_group.module';
+import { RolePermissionModule } from './resources/role_permission/role_permission.module';
 import { HttpInterceptor } from './interceptors/http.interceptor';
 import { HttpExceptionFilter } from './filters/http-exception.filter';
 import { TimeoutInterceptor } from './interceptors/timeout.interceptor';
@@ -22,13 +25,16 @@ import { TimeoutInterceptor } from './interceptors/timeout.interceptor';
       password: '',
       database: 'mes',
       autoLoadEntities: true,
-      synchronize: false,
+      synchronize: true,
     }),
     AuthModule,
     UserModule,
     DepartmentModule,
     RoleModule,
     UserRoleModule,
+    PermissionModule,
+    PermissionGroupModule,
+    RolePermissionModule,
   ],
   controllers: [AppController],
   providers: [

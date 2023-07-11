@@ -4,22 +4,30 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { RoleService } from './../role/role.service';
 import { UserRole } from './user_role.entity';
 import { User } from '../user/user.entity';
-// import { CreateUserRoleDto } from './dto/create-user_role.dto';
-// import { UpdateUserRoleDto } from './dto/update-user_role.dto';
 
 @Injectable()
 export class UserRoleService {
-  // create(createUserRoleDto: CreateUserRoleDto) {
-  //   return 'This action adds a new userRole';
-  // }
   constructor(
     @InjectRepository(UserRole) private repository: Repository<UserRole>,
     private roleService: RoleService,
   ) {}
 
-  async findUsersByRole(query: SearchUserByRoleInterface): Promise<User[]> {
-    let { id } = query;
-    const { name } = query;
+  async upsert(body: UpsertUserRoleInterface) {
+    await this.repository.upsert(
+      body.user_ids.map((i) => {
+        return {
+          id: i.id,
+          role_id: body.role_id,
+          user_id: i.user_id,
+        };
+      }),
+      ['id'],
+    );
+  }
+
+  async findUsers(body: SearchUserByRoleInterface): Promise<User[]> {
+    let { id } = body;
+    const { name } = body;
 
     if (!id && name) {
       const role = await this.roleService.findOne(undefined, name);
@@ -29,7 +37,8 @@ export class UserRoleService {
     const users = await this.repository
       .createQueryBuilder('user_role')
       .select([
-        't_user.id as id',
+        'user_role.id as user_role_id',
+        't_user.id as user_id',
         't_user.name as name',
         't_user.phone as phone',
         't_department.id as department_id',
@@ -47,5 +56,10 @@ export class UserRoleService {
       .getRawMany();
 
     return users;
+  }
+
+  async remove(body: RemoveUserRoleInterface) {
+    await this.repository.delete(body.ids);
+    return null;
   }
 }

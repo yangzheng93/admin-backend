@@ -1,5 +1,6 @@
 import {
   CreateDateColumn,
+  DeleteDateColumn,
   PrimaryGeneratedColumn,
   Timestamp,
   UpdateDateColumn,
@@ -14,4 +15,7 @@ export abstract class CustomBaseEntity {
 
   @UpdateDateColumn()
   updated_at: Timestamp;
+
+  @DeleteDateColumn()
+  deleted_at: Timestamp;
 }

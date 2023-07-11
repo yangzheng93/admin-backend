@@ -8,6 +8,15 @@ import { EditRoleDto } from './role.dto';
 export class RoleService {
   constructor(@InjectRepository(Role) private repository: Repository<Role>) {}
 
+  // [k]: [v]
+  async findMapOfRoles() {
+    const roles = await this.findAll();
+
+    return roles.reduce((a, b) => {
+      return { ...a, [b.id]: b.name };
+    }, {});
+  }
+
   async save(body: EditRoleDto): Promise<Role> {
     const exist = await this.repository.findOneBy({ name: body.name });
     if (exist) {
@@ -22,15 +31,6 @@ export class RoleService {
       .createQueryBuilder('role')
       .orderBy({ created_at: 'ASC', id: 'ASC' })
       .getMany();
-  }
-
-  // [k]: [v]
-  async findMapOfRoles() {
-    const roles = await this.findAll();
-
-    return roles.reduce((a, b) => {
-      return { ...a, [b.id]: b.name };
-    }, {});
   }
 
   async findOne(id?: number, name?: string): Promise<Role> {

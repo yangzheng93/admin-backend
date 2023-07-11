@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
-import { AuthGuard } from './auth.guard';
+import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { AuthLoginDto } from './auth.dto';
 import { AuthService } from './auth.service';
 import { PublicAuth } from './decorators/public.decorator';
@@ -22,10 +13,4 @@ export class AuthController {
   login(@Body() body: AuthLoginDto) {
     return this.service.login(body.phone, body.password);
   }
-
-  // @UseGuards(AuthGuard)
-  // @Get('loginned-info')
-  // getLoginnedUser(@Req() req: any) {
-  //   return req['user-info'];
-  // }
 }

@@ -32,8 +32,8 @@ export class UserController {
   // user/simple-list
   @Post('simple-list')
   @HttpCode(200)
-  findSimpleAll() {
-    return this.service.findSimpleAll();
+  findAllOfSimple() {
+    return this.service.findAllOfSimple();
   }
 
   // user/find-one
@@ -44,6 +44,14 @@ export class UserController {
     }
 
     return this.service.findOne(query);
+  }
+
+  // user/current-info
+  // 根据 token 返回当前登录用户
+  @Get('current-info')
+  findCurrentUserInfo(@Req() req: Request) {
+    const cur = req['user-info'];
+    return this.service.findOne({ id: +cur.sub });
   }
 
   // user/update-password

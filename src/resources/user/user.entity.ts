@@ -22,6 +22,9 @@ export class User extends CustomBaseEntity {
   @Column({ type: 'int', nullable: true })
   department_id: number;
 
-  @Column({ type: 'varchar', default: '1' })
-  is_actived: '0' | '1';
+  @Column({ type: 'tinyint', default: 1 })
+  is_actived: 0 | 1;
+
+  @Column({ type: 'tinyint', default: 0 })
+  is_admin: 0 | 1;
 }
