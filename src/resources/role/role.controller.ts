@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { EditRoleDto } from './role.dto';
 
@@ -8,6 +8,7 @@ export class RoleController {
 
   // role/save
   @Post('save')
+  @HttpCode(200)
   save(@Body() body: EditRoleDto) {
     return this.service.save(body);
   }

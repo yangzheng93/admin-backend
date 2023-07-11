@@ -1,10 +1,9 @@
 import {
   Controller,
-  Get,
-  Query,
   BadRequestException,
   Post,
   Body,
+  HttpCode,
 } from '@nestjs/common';
 import { UserRoleService } from './user_role.service';
 
@@ -14,6 +13,7 @@ export class UserRoleController {
 
   // user-role/upsert
   @Post('upsert')
+  @HttpCode(200)
   upsert(@Body() body: UpsertUserRoleInterface) {
     if (!body.role_id && !body.user_ids) {
       throw new BadRequestException('参数错误');
@@ -24,7 +24,8 @@ export class UserRoleController {
 
   // user-role/users
   @Post('users')
-  findUsersByRole(@Body() body: SearchUserByRoleInterface) {
+  @HttpCode(200)
+  findUsersByRole(@Body() body: GetUserByRoleInterface) {
     if (!body.id && !body.name) {
       throw new BadRequestException('参数错误');
     }
@@ -34,6 +35,7 @@ export class UserRoleController {
 
   // user-role/remove
   @Post('remove')
+  @HttpCode(200)
   remove(@Body() body: RemoveUserRoleInterface) {
     if (!body.ids) {
       throw new BadRequestException('参数错误');

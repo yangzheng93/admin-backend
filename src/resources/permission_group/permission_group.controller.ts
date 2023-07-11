@@ -3,5 +3,5 @@ import { PermissionGroupService } from './permission_group.service';
 
 @Controller('permission-group')
 export class PermissionGroupController {
-  constructor(private readonly permissionGroupService: PermissionGroupService) {}
+  constructor(private readonly service: PermissionGroupService) {}
 }

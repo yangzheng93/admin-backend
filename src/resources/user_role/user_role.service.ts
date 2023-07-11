@@ -25,10 +25,11 @@ export class UserRoleService {
     );
   }
 
-  async findUsers(body: SearchUserByRoleInterface): Promise<User[]> {
+  async findUsers(body: GetUserByRoleInterface): Promise<User[]> {
     let { id } = body;
     const { name } = body;
 
+    // 如果是通过name查询
     if (!id && name) {
       const role = await this.roleService.findOne(undefined, name);
       id = role.id;

@@ -1,4 +1,4 @@
-interface SearchUserByRoleInterface {
+interface GetUserByRoleInterface {
   id?: number; // role_id
   name?: string; // role_name
 }

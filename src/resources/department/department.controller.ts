@@ -16,6 +16,7 @@ export class DepartmentController {
 
   // department/save
   @Post('save')
+  @HttpCode(200)
   save(@Body() body: EditDepartmentDto) {
     return this.service.save(body);
   }
