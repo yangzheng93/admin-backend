@@ -25,7 +25,7 @@ export class UserRoleService {
     );
   }
 
-  async findUsers(body: GetUserByRoleInterface): Promise<User[]> {
+  async findUsers(body: GetUserByRoleInterface): Promise<any[]> {
     let { id } = body;
     const { name } = body;
 
@@ -54,6 +54,9 @@ export class UserRoleService {
         't_user.department_id = t_department.id',
       )
       .where('user_role.role_id = :id', { id })
+      .orderBy({
+        'user_role.created_at': 'DESC',
+      })
       .getRawMany();
 
     return users;

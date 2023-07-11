@@ -27,10 +27,9 @@ export class RoleService {
   }
 
   async findAll(): Promise<Role[]> {
-    return await this.repository
-      .createQueryBuilder('role')
-      .orderBy({ created_at: 'ASC', id: 'ASC' })
-      .getMany();
+    return await this.repository.find({
+      order: { created_at: 'ASC', id: 'ASC' },
+    });
   }
 
   async findOne(id?: number, name?: string): Promise<Role> {

@@ -15,7 +15,7 @@ export class RolePermissionController {
   @Post('list')
   @HttpCode(200)
   findAll(@Body() body: GetPermissionByRoleInterface) {
-    if (!body.id && !body.name) {
+    if (!body.role_ids && !body.role_name) {
       throw new BadRequestException('参数错误');
     }
 

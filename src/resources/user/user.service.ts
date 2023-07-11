@@ -2,6 +2,7 @@ import { Not, Repository } from 'typeorm';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RoleService } from '../role/role.service';
+import { RolePermissionService } from '../role_permission/role_permission.service';
 import { User } from './user.entity';
 import { EditUserDto, UpdatePwdDto } from './user.dto';
 import { MD5 } from 'crypto-js';
@@ -11,6 +12,7 @@ export class UserService {
   constructor(
     @InjectRepository(User) private repository: Repository<User>,
     private roleService: RoleService,
+    private rolePermissionService: RolePermissionService,
   ) {}
 
   async save(body: EditUserDto): Promise<User> {
@@ -31,9 +33,7 @@ export class UserService {
     );
   }
 
-  async findAll(): Promise<User[]> {
-    // const mapOfRoles = await this.roleService.findMapOfRoles();
-
+  async findAll(): Promise<any[]> {
     const users = await this.repository
       .createQueryBuilder('user')
       .select([
@@ -44,7 +44,6 @@ export class UserService {
         'user.phone as phone',
         't_department.id as department_id',
         't_department.name as department_name',
-        // 'group_concat(t_user_role.role_id) as role_ids',
         'user.created_at as created_at',
         'user.updated_at as updated_at',
         'user.is_actived as is_actived',
@@ -64,21 +63,6 @@ export class UserService {
       .getRawMany();
 
     return users;
-
-    // return users.map((i) => {
-    //   return {
-    //     ...i,
-    //     role_ids: i.role_ids?.split(',') || [],
-    //     role_names: Array.from(
-    //       new Set(
-    //         i.role_ids
-    //           ?.split(',')
-    //           ?.sort()
-    //           ?.map((id: string | number) => mapOfRoles[id]) || [],
-    //       ),
-    //     ),
-    //   };
-    // });
   }
 
   // 只返回 is_actived 的用户的 name + phone 字段
@@ -90,7 +74,7 @@ export class UserService {
     });
   }
 
-  async findOne(query: UserSearchInterface, hasPwd = false): Promise<User> {
+  async findOne(query: UserSearchInterface, hasPwd = false): Promise<any> {
     const { id, phone } = query;
 
     const mapOfRoles = await this.roleService.findMapOfRoles();
@@ -139,6 +123,10 @@ export class UserService {
             .sort()
         : [];
 
+      const permissionsInRole = await this.rolePermissionService.findAll({
+        role_ids: role_ids,
+      });
+
       // 重新整理格式
       const c = {
         ...user,
@@ -150,6 +138,18 @@ export class UserService {
           ids: role_ids,
           names: role_ids?.map((id: number) => mapOfRoles[id]) || [],
         },
+        permissions: Object.values(
+          permissionsInRole.reduce((a, b) => {
+            return {
+              ...a,
+              [b.permission_id]: {
+                id: b.permission_id,
+                name: b.permission_name,
+                alias: b.permission_alias,
+              },
+            };
+          }, {}),
+        ),
       };
 
       delete c.department_id;

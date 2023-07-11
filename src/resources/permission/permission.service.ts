@@ -9,7 +9,7 @@ export class PermissionService {
     @InjectRepository(Permission) private repository: Repository<Permission>,
   ) {}
 
-  async findAll(): Promise<Permission[]> {
+  async findAll(): Promise<any[]> {
     return this.repository
       .createQueryBuilder('permission')
       .select([

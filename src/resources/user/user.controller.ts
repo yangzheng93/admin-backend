@@ -50,8 +50,12 @@ export class UserController {
   // 根据 token 返回当前登录用户
   @Get('current-info')
   findCurrentUserInfo(@Req() req: Request) {
-    const cur = req['user-info'];
-    return this.service.findOne({ id: +cur.sub });
+    const cur = req?.['user-info'];
+    if (cur?.sub) {
+      return this.service.findOne({ id: +cur.sub });
+    }
+
+    return null;
   }
 
   // user/update-password
@@ -61,7 +65,9 @@ export class UserController {
       throw new BadRequestException('两次输入的密码不一致');
     }
 
-    const cur = req['user-info'];
-    return this.service.updatePassword(+cur.sub, body);
+    const cur = req?.['user-info'];
+    if (cur?.sub) {
+      return this.service.updatePassword(+cur.sub, body);
+    }
   }
 }

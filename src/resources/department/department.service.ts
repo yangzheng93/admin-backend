@@ -24,7 +24,7 @@ export class DepartmentService {
     return await this.repository.save(body);
   }
 
-  async findAll(): Promise<Department[]> {
+  async findAll(): Promise<any[]> {
     return await this.repository
       .createQueryBuilder('department')
       .select([
