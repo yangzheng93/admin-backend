@@ -22,6 +22,7 @@ export class UserController {
 
   // user/save
   @Post('save')
+  @HttpCode(200)
   save(@Body() body: EditUserDto) {
     return this.service.save(body);
   }
@@ -64,6 +65,7 @@ export class UserController {
 
   // user/update-password
   @Post('update-password')
+  @HttpCode(200)
   updatePassword(@Body() body: UpdatePwdDto, @Req() req: Request) {
     if (body.password !== body.confirmed) {
       throw new BadRequestException('两次输入的密码不一致');
@@ -78,6 +80,7 @@ export class UserController {
   // user/bulk-import
   @UseInterceptors(FileInterceptor('file'))
   @Post('bulk-import')
+  @HttpCode(200)
   async toBulkImport(@UploadedFile() file: Express.Multer.File) {
     if (!file) {
       throw new BadRequestException('参数错误');
@@ -105,7 +108,7 @@ export class UserController {
 
       return this.service.bulkCreate(users);
     } catch (error) {
-      throw new BadRequestException('文件读取失败');
+      throw new BadRequestException(`文件读取失败: ${error.message}`);
     }
   }
 }
