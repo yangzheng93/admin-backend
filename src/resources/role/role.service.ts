@@ -9,7 +9,7 @@ export class RoleService {
   constructor(@InjectRepository(Role) private repository: Repository<Role>) {}
 
   // [k]: [v]
-  async findMapOfRoles() {
+  async buildMapOfRoles() {
     const roles = await this.findAll();
 
     return roles.reduce((a, b) => {

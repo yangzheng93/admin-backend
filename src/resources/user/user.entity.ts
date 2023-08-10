@@ -7,7 +7,7 @@ export class User extends CustomBaseEntity {
   name: string;
 
   @Column({ type: 'enum', enum: ['男', '女'], nullable: true })
-  gender: '男' | '女';
+  gender: UserGender;
 
   @Column({ type: 'varchar', nullable: true })
   email: string;

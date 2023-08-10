@@ -10,6 +10,15 @@ export class DepartmentService {
     @InjectRepository(Department) private repository: Repository<Department>,
   ) {}
 
+  // [k]: [v]
+  async buildMapOfDepartments() {
+    const departments = await this.repository.find();
+
+    return departments.reduce((a, b) => {
+      return { ...a, [b.id]: b.name };
+    }, {});
+  }
+
   async save(body: EditDepartmentDto) {
     const params = { name: body.name };
     if (body.id) {
@@ -24,6 +33,7 @@ export class DepartmentService {
     return await this.repository.save(body);
   }
 
+  // 部门+部门负责人信息
   async findAll(): Promise<any[]> {
     return await this.repository
       .createQueryBuilder('department')

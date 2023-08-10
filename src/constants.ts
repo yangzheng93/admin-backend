@@ -1,1 +1,3 @@
 export const JWT_SECRET = 'THIS_IS_A_JWT_SECRET';
+
+export const DEFAULT_USER_PASSWORD = '888888';

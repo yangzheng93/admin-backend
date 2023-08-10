@@ -1,16 +1,19 @@
-import { Not, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { DepartmentService } from '../department/department.service';
 import { RoleService } from '../role/role.service';
 import { RolePermissionService } from '../role_permission/role_permission.service';
 import { User } from './user.entity';
 import { EditUserDto, UpdatePwdDto } from './user.dto';
+import { DEFAULT_USER_PASSWORD } from '../../constants';
 import { MD5 } from 'crypto-js';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private repository: Repository<User>,
+    private departmentService: DepartmentService,
     private roleService: RoleService,
     private rolePermissionService: RolePermissionService,
   ) {}
@@ -29,8 +32,53 @@ export class UserService {
     return await this.repository.save(
       body.id
         ? body
-        : Object.assign(body, { id: null, password: MD5('888888').toString() }),
+        : Object.assign(body, {
+            id: null,
+            password: MD5(DEFAULT_USER_PASSWORD).toString(),
+          }),
     );
+  }
+
+  async bulkCreate(users: BulkImportUserInterface[]) {
+    const mapOfDepartments =
+      await this.departmentService.buildMapOfDepartments();
+
+    const namesOfDepartments = Object.keys(mapOfDepartments).reduce((a, b) => {
+      return { ...a, [mapOfDepartments[b]]: b };
+    }, {});
+
+    const exists = await this.repository.find({
+      where: {
+        phone: In(users.map((u) => u.phone)),
+      },
+    });
+
+    const mapOfExists = exists.reduce((a, b) => {
+      return { ...a, [b.phone]: b };
+    }, {});
+
+    try {
+      await this.repository.upsert(
+        users.map((u) => {
+          return {
+            id: mapOfExists?.[u.phone]?.id,
+            name: u.name,
+            gender: u.gender,
+            phone: u.phone,
+            email: u.email,
+            department_id: namesOfDepartments[u.department],
+            password:
+              mapOfExists?.[u.phone]?.password ||
+              MD5(DEFAULT_USER_PASSWORD).toString(),
+          };
+        }),
+        ['id'],
+      );
+
+      return true;
+    } catch (error) {
+      throw new BadRequestException('导入失败');
+    }
   }
 
   async findAll(): Promise<any[]> {
@@ -66,7 +114,8 @@ export class UserService {
   }
 
   // 只返回 is_actived 的用户的 name + phone 字段
-  async findAllOfSimple(): Promise<User[]> {
+  // 用户列表下拉
+  async findSimpleAll(): Promise<User[]> {
     return await this.repository.find({
       select: ['id', 'name', 'phone'],
       where: { is_actived: 1 },
@@ -77,7 +126,7 @@ export class UserService {
   async findOne(query: UserSearchInterface, hasPwd = false): Promise<any> {
     const { id, phone } = query;
 
-    const mapOfRoles = await this.roleService.findMapOfRoles();
+    const mapOfRoles = await this.roleService.buildMapOfRoles();
 
     let sqlChain = this.repository
       .createQueryBuilder('user')
