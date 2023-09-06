@@ -17,4 +17,5 @@ async function bootstrap() {
   app.setGlobalPrefix('mes-v1');
   await app.listen(3000);
 }
+
 bootstrap();
